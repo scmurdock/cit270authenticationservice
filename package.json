@@ -1,0 +1,15 @@
+{
+  "name": "cit270authenticationservicespring2022",
+  "version": "1.0.0",
+  "description": "Authentication Service",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start":"node server.js"
+  },
+  "author": "Sean Murdock",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
+}
