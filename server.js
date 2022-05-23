@@ -5,6 +5,7 @@ const app = express();
 const md5 = require('md5');
 const bodyParser = require('body-parser');//body parser is called middleware
 const {createClient} = require('redis');
+const { response } = require('express');
 const redisClient = createClient(
 {
   socket:{
@@ -41,8 +42,17 @@ const validatePassword = async (request, response)=>{
     }
 
 }
+
+const savePassword = async (request, response)=>{
+    await redisClient.hSet('passwords',request.body.userName, request.body.password);
+    response.status(200);
+    response.send({result:"Saved"});
+}
+
 app.get('/',(request,response)=>{//every time something calls your API that is a request
     response.send("Hello");// a response is when the API gives the information requested
 })
 
+
+app.post('/signup', savePassword);
 app.post('/login',validatePassword);
