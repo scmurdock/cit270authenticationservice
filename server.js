@@ -1,24 +1,27 @@
 const express = require('express');
-
-const port = 3000;
+const https = require('https');
+const port = 443;//4043 or 443
 const app = express();
+const fs = require('fs');
 const md5 = require('md5');
 const bodyParser = require('body-parser');//body parser is called middleware
 const {createClient} = require('redis');
 const { response } = require('express');
+const { fstat } = require('fs');
 const redisClient = createClient(
 {
-  socket:{
-      port:6379,
-      host:"127.0.0.1",
-  },
+  url:'redis://default@10.128.0.2:6379',
 }
 );//this creates a connection to the redis database
 
 
 app.use(bodyParser.json());//use the middleware (call it before anything else happens on each request)
 
-app.listen(port, async ()=>{
+https.createServer({
+    key: fs.readFileSync('server.key'),
+    cert: fs.readFileSync('server.cert'),
+    passphrase: 'P@ssw0rd'
+}, app).listen(port, async ()=>{
     await redisClient.connect();//creating a TCP socket with Redis
     console.log("Listening on port: "+port);
 })
@@ -44,10 +47,17 @@ const validatePassword = async (request, response)=>{
 }
 
 const savePassword = async (request, response)=>{
-    await redisClient.hSet('passwords',request.body.userName, request.body.password);
-    response.status(200);
+    const clearTextPassword = request.body.password;
+    const hashedTextPassword = md5(clearTextPassword);
+    await redisClient.hSet('passwords',request.body.userName, hashedTextPassword);//this is wrong
+    response.status(200);//status 200 means ok
     response.send({result:"Saved"});
 }
+
+/*async function savePassword(request,response){
+
+
+}*/
 
 app.get('/',(request,response)=>{//every time something calls your API that is a request
     response.send("Hello");// a response is when the API gives the information requested
