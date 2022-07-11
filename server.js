@@ -10,7 +10,7 @@ const { response } = require('express');
 const { fstat } = require('fs');
 const redisClient = createClient(
 {
-  url:'redis://default@10.128.0.2:6379',
+  url:'redis://default@34.132.23.7:6379',
 }
 );//this creates a connection to the redis database
 
